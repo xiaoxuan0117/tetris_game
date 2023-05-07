@@ -384,6 +384,7 @@ template {
   --white: #ffffff;
   --dark: #202C4A;
   --grid: #F5F5F5;
+  --grey: #585858;
 }
 
 body {
@@ -393,6 +394,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 code {

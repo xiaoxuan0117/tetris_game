@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import { gameStatusSlice } from "../model/gameStatus";
 import { boardSlice } from "../model/board";
+import { scoreSlice } from "../model/score";
 
 export const store = configureStore({
   reducer: {
     gameStatus: gameStatusSlice.reducer,
     board: boardSlice.reducer,
+    score: scoreSlice.reducer,
   },
 });
 
