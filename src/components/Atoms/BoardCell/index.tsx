@@ -1,4 +1,5 @@
 import * as React from "react";
+import classnames from "classnames";
 
 import styles from "./index.module.css";
 
@@ -8,5 +9,5 @@ export interface IBoardCellProps {
 }
 
 export default function BoardCell(props: IBoardCellProps) {
-  return <div className={styles.boardCell} />;
+  return <div className={classnames(styles.boardCell, props.className)} />;
 }
