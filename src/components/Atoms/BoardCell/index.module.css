@@ -1,0 +1,5 @@
+.boardCell {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--grid);
+}
