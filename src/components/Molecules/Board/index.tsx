@@ -12,7 +12,10 @@ import styles from "./index.module.css";
 export interface IBoardProps {}
 
 export default function Board(props: IBoardProps) {
-  const {board: {rows}, player: {tetromino}} = useAppSelector((state: RootState) => state);
+  const {
+    board: { rows },
+    player: { position, tetromino },
+  } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
   const boardStyles = {
@@ -21,8 +24,8 @@ export default function Board(props: IBoardProps) {
   };
 
   React.useEffect(() => {
-    dispatch(setRows({ row: 20, column: 10, tetromino }));
-  }, [dispatch, tetromino]);
+    dispatch(setRows({ row: 20, column: 10, position, tetromino }));
+  }, [dispatch, position, tetromino]);
   return (
     <div className={styles.board} style={boardStyles}>
       {rows.map((row, index) =>

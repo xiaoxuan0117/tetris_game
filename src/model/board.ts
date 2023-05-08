@@ -19,38 +19,74 @@ const initialState: BoardState = {
   rows: [],
 };
 
-
-export const buildBoard = ({ row, column, position, shape, className="" }: { row: number; column: number, position:{y: number, x: number},  shape?: number[][], className?: string}) => {
-  let buildRows: (typeof defaultCell)[][] = Array.from(
-    { length: row },
-    () => Array.from({ length: column }, () => ({ ...defaultCell }))
+export const buildBoard = ({
+  row,
+  column,
+  position,
+  shape,
+  className = "",
+}: {
+  row: number;
+  column: number;
+  position: { y: number; x: number };
+  shape?: number[][];
+  className?: string;
+}) => {
+  let buildRows: (typeof defaultCell)[][] = Array.from({ length: row }, () =>
+    Array.from({ length: column }, () => ({ ...defaultCell }))
   );
 
-  if(shape){
+  if (shape) {
     buildRows = transferShapeToBoard(buildRows, position, shape, className);
   }
 
   return buildRows;
-}
+};
 
-const transferShapeToBoard = (board: Cell[][], position: {y: number, x: number}, shape: number[][], className: string) => {
-  shape.forEach((row: number[], y: number) => {row.forEach((cell: number, x: number) => {
-    if(cell){
-      const shapePositionY = y + position.y;
-      const shapePositionX = x + position.x;
-      board[shapePositionY][shapePositionX] = {occupied: true, className};
-    }
-  })})
+const transferShapeToBoard = (
+  board: Cell[][],
+  position: { y: number; x: number },
+  shape: number[][],
+  className: string
+) => {
+  shape.forEach((row: number[], y: number) => {
+    row.forEach((cell: number, x: number) => {
+      if (cell) {
+        const shapePositionY = y + position.y;
+        const shapePositionX = x + position.x;
+        board[shapePositionY][shapePositionX] = { occupied: false, className };
+      }
+    });
+  });
   return board;
-}
+};
 
 export const boardSlice = createSlice({
   name: "Board",
   initialState,
   reducers: {
-    setRows: (state, action: PayloadAction<{ row: number, column: number, tetromino: Tetromino }>) => {
-      const {row, column, tetromino} = action.payload;
-      const rows = buildBoard({row, column, position: {y: 0, x: 4},  shape: tetromino.shape, className: tetromino.className});
+    setRows: (
+      state,
+      action: PayloadAction<{
+        row: number;
+        column: number;
+        position: { y: number; x: number };
+        tetromino: Tetromino;
+      }>
+    ) => {
+      const {
+        row,
+        column,
+        position: { y, x },
+        tetromino,
+      } = action.payload;
+      const rows = buildBoard({
+        row,
+        column,
+        position: { y, x },
+        shape: tetromino.shape,
+        className: tetromino.className,
+      });
       state.rows = rows;
     },
   },
