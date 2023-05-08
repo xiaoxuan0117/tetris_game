@@ -11,21 +11,6 @@ export interface IPreviewsProps {
   previews: number[];
 }
 
-const previewSapes = [
-  {
-    row: 4,
-    column: 4,
-  },
-  {
-    row: 4,
-    column: 4,
-  },
-  {
-    row: 4,
-    column: 4,
-  },
-];
-
 export default function Previews(props: IPreviewsProps) {
   const tetrominoes = useAppSelector((state: RootState) => state.player.tetrominoes);
   
