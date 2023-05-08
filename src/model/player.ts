@@ -104,10 +104,17 @@ export const playerSlice = createSlice({
       }
       state.tetromino = tetrominoes.pop() as Tetromino;
       state.tetrominoes = tetrominoes;
+    },
+    setNewTetromino: (state) => {
+      let newTetrominos = [...state.tetrominoes];
+      newTetrominos.unshift(randomTetromino());
+      state.tetromino = newTetrominos.pop() as Tetromino;
+      state.tetrominoes = newTetrominos;
+
     }
   },
 });
 
-export const {setPlayerTetrominoes} = playerSlice.actions;
+export const {setPlayerTetrominoes, setNewTetromino} = playerSlice.actions;
 
 export default playerSlice.reducer;
