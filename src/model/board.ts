@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { defaultCell, Cell } from "../static/cell";
-import { Tetromino} from "./player";
+import { Tetromino } from "./player";
 
 export interface BoardState {
   size: {
@@ -20,24 +20,24 @@ const initialState: BoardState = {
 };
 
 
-export const buildBoard = ({ row, column, shape, className="" }: { row: number; column: number, shape?: number[][], className?: string}) => {
+export const buildBoard = ({ row, column, position, shape, className="" }: { row: number; column: number, position:{y: number, x: number},  shape?: number[][], className?: string}) => {
   let buildRows: (typeof defaultCell)[][] = Array.from(
     { length: row },
     () => Array.from({ length: column }, () => ({ ...defaultCell }))
   );
 
   if(shape){
-    buildRows = transferShapeToBoard(buildRows, shape, {row: 0, column: 0}, className);
+    buildRows = transferShapeToBoard(buildRows, position, shape, className);
   }
 
   return buildRows;
 }
 
-const transferShapeToBoard = (board: Cell[][], shape: number[][], position: {row: number, column: number}, className: string) => {
+const transferShapeToBoard = (board: Cell[][], position: {y: number, x: number}, shape: number[][], className: string) => {
   shape.forEach((row: number[], y: number) => {row.forEach((cell: number, x: number) => {
     if(cell){
-      const shapePositionY = y + position.row;
-      const shapePositionX = x + position.column;
+      const shapePositionY = y + position.y;
+      const shapePositionX = x + position.x;
       board[shapePositionY][shapePositionX] = {occupied: true, className};
     }
   })})
@@ -48,8 +48,10 @@ export const boardSlice = createSlice({
   name: "Board",
   initialState,
   reducers: {
-    setRows: (state, action: PayloadAction<(typeof defaultCell)[][]>) => {
-      state.rows = action.payload;
+    setRows: (state, action: PayloadAction<{ row: number, column: number, tetromino: Tetromino }>) => {
+      const {row, column, tetromino} = action.payload;
+      const rows = buildBoard({row, column, position: {y: 0, x: 4},  shape: tetromino.shape, className: tetromino.className});
+      state.rows = rows;
     },
   },
 });

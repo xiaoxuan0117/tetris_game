@@ -28,6 +28,7 @@ const previewSapes = [
 
 export default function Previews(props: IPreviewsProps) {
   const tetrominoes = useAppSelector((state: RootState) => state.player.tetrominoes);
+  
   return (
     <div className={styles.previews}>
       {tetrominoes.map((tetromino, index) => (

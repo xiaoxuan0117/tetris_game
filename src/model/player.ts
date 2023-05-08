@@ -4,16 +4,16 @@ export interface PlayerState {
   collided: boolean;
   isFastDrop: boolean;
   position: { x: number; y: number };
-  tetrominoes: Tetromino[];
   tetromino: Tetromino;
+  tetrominoes: Tetromino[];
 }
 
 const initialState: PlayerState = {
   collided: false,
   isFastDrop: false,
   position: { x: 0, y: 4 },
-  tetrominoes: [],
   tetromino: { shape: [], className: "" },
+  tetrominoes: [],
 };
 
 export interface Tetromino {
@@ -90,7 +90,6 @@ const randomTetromino = ():Tetromino => {
   const keys = Object.keys(tetrominos);
   const index = Math.floor(Math.random() * keys.length);
   const key = keys[index];
-  console.log('random')
   return tetrominos[key];
 }
 
@@ -103,6 +102,7 @@ export const playerSlice = createSlice({
       for(let i = 0; i < action.payload; i++) {
         tetrominoes.push(randomTetromino());
       }
+      state.tetromino = tetrominoes.pop() as Tetromino;
       state.tetrominoes = tetrominoes;
     }
   },

@@ -20,7 +20,7 @@ export default function Preview(props: IPreviewProps) {
 
   return (
     <div className={styles.preview} style={boardStyles}>
-      {buildBoard({ row: 4, column: 4, shape: props.shape, className: props.className }).map((row, index) =>
+      {buildBoard({ row: 4, column: 4, position: {y: 0, x: 0}, shape: props.shape, className: props.className }).map((row, index) =>
         row.map((cell, index) => (
           <BoardCell
             key={index}
