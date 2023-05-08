@@ -3,3 +3,31 @@
   height: 20px;
   border: 1.5px solid var(--grid);
 }
+
+.tetromino__i {
+  background-color: var(--light-blue);
+}
+
+.tetromino__j {
+  background-color: var(--dark-blue);
+}
+
+.tetromino__l {
+  background-color: var(--orange);
+}
+
+.tetromino__o {
+  background-color: var(--yellow);
+}
+
+.tetromino__s {
+  background-color: var(--green);
+}
+
+.tetromino__t {
+  background-color: var(--purple);
+}
+
+.tetromino__z {
+  background-color: var(--red);
+}

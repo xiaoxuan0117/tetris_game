@@ -5,7 +5,7 @@ import { RootState } from "../../../store";
 import { useAppDispatch } from "../../../hooks";
 import { setRows } from "../../../model/board";
 
-import { useBoard } from "../../../utils/useBoard";
+import {buildBoard} from "../../../model/board";
 
 import BoardCell from "../../Atoms/BoardCell";
 
@@ -16,7 +16,6 @@ export interface IBoardProps {}
 export default function Board(props: IBoardProps) {
   const rows = useAppSelector((state: RootState) => state.board.rows);
   const dispatch = useAppDispatch();
-  const [buildBoard] = useBoard();
 
   const boardStyles = {
     gridTemplateRows: `repeat(${20}, 1fr)`,
@@ -25,7 +24,7 @@ export default function Board(props: IBoardProps) {
 
   React.useEffect(() => {
     dispatch(setRows(buildBoard({ row: 20, column: 10 })));
-  }, [buildBoard, dispatch]);
+  }, [dispatch]);
   return (
     <div className={styles.board} style={boardStyles}>
       {rows.map((row, index) =>
@@ -33,7 +32,7 @@ export default function Board(props: IBoardProps) {
           <BoardCell
             key={index}
             occupied={cell.occupied}
-            className={cell.className}
+            color={cell.className}
           />
         ))
       )}

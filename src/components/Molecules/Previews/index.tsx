@@ -1,5 +1,8 @@
 import * as React from "react";
 
+import { useAppSelector } from "../../../hooks";
+import { RootState } from "../../../store";
+
 import Preview from "../../Atoms/Preview";
 
 import styles from "./index.module.css";
@@ -24,10 +27,11 @@ const previewSapes = [
 ];
 
 export default function Previews(props: IPreviewsProps) {
+  const tetrominoes = useAppSelector((state: RootState) => state.player.tetrominoes);
   return (
     <div className={styles.previews}>
-      {previewSapes.map((shape, index) => (
-        <Preview key={index} shape={shape} />
+      {tetrominoes.map((tetromino, index) => (
+        <Preview key={index} shape={tetromino.shape} className={tetromino.className} />
       ))}
     </div>
   );
