@@ -385,6 +385,13 @@ template {
   --dark: #202C4A;
   --grid: #F5F5F5;
   --grey: #585858;
+  --light-blue: #AADBE5;
+  --dark-blue: #5A6794;
+  --orange: #FF9D42;
+  --yellow: #FFED50;
+  --green: #A5CA87;
+  --purple: #CBA1DA;
+  --red: #DD6363;
 }
 
 body {
