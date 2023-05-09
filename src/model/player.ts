@@ -7,6 +7,7 @@ export interface PlayerState {
   position: { y: number; x: number };
   tetromino: Tetromino;
   tetrominoes: Tetromino[];
+  dropTime: number;
 }
 
 const initialState: PlayerState = {
@@ -15,6 +16,7 @@ const initialState: PlayerState = {
   position: { y: 0, x: 4 },
   tetromino: { shape: [], className: "" },
   tetrominoes: [],
+  dropTime: 1000,
 };
 
 export interface Tetromino {
@@ -208,19 +210,19 @@ export const playerSlice = createSlice({
         rows
       );
 
-      const isCollideToBottom = !isWithinBoard(
-        state.tetromino.shape,
-        { y: y + 1, x: state.position.x },
-        rows
-      );
-
-      console.log("collide?", isCollideToBottom);
+      const isCollideToBottom =
+        !isWithinBoard(
+          state.tetromino.shape,
+          { y: y + 1, x: state.position.x },
+          rows
+        ) ||
+        isCollided(state.tetromino.shape, { y, x: state.position.x }, rows);
 
       if (isWithinBoardResult && !isCollidedResult) {
         state.position = { y, x };
       }
 
-      if (isCollidedResult || isCollideToBottom) {
+      if (isCollideToBottom) {
         state.collided = true;
       }
     },

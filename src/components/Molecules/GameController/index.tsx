@@ -36,6 +36,7 @@ const movements: {
 export default function GameController(props: IGameControllerProps) {
   const {
     board: { rows },
+    player: { dropTime },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
@@ -54,7 +55,12 @@ export default function GameController(props: IGameControllerProps) {
     return;
   };
 
-  React.useEffect(() => {});
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(movePosition({ rows, movement: movements["down"] }));
+    }, dropTime);
+    return () => clearInterval(interval);
+  }, [dispatch, rows, dropTime]);
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {};
   return (
