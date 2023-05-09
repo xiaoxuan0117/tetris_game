@@ -213,7 +213,7 @@ export const playerSlice = createSlice({
       const isCollideToBottom =
         !isWithinBoard(
           state.tetromino.shape,
-          { y: y + 1, x: state.position.x },
+          { y: y, x: state.position.x },
           rows
         ) ||
         isCollided(state.tetromino.shape, { y, x: state.position.x }, rows);
