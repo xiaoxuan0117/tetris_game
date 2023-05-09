@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { defaultCell, Cell } from "../static/cell";
-import { isCollided, isWithinBoard, Tetromino } from "./player";
+import { Tetromino } from "./player";
 
 export interface BoardState {
   size: {
@@ -9,6 +9,9 @@ export interface BoardState {
     column: number;
   };
   rows: (typeof defaultCell)[][];
+  level: number;
+  lines: number;
+  points: number;
 }
 
 const initialState: BoardState = {
@@ -17,6 +20,9 @@ const initialState: BoardState = {
     column: 10,
   },
   rows: [],
+  level: 0,
+  lines: 0,
+  points: 0,
 };
 
 export const buildBoard = ({
@@ -58,6 +64,23 @@ export const buildBoard = ({
   }
 
   return buildRows;
+};
+
+const clearLine = (buildRows: Cell[][]) => {
+  const clearedRows = [];
+  let clearedLines: number = 0;
+  for (let y = 0; y < buildRows.length; y++) {
+    if (buildRows[y].every((cell) => cell.occupied)) {
+      clearedLines += 1;
+      clearedRows.unshift(
+        Array.from({ length: buildRows[y].length }, () => ({ ...defaultCell }))
+      );
+    } else {
+      clearedRows.push(buildRows[y]);
+    }
+  }
+
+  return { lines: clearedLines, rows: clearedRows };
 };
 
 const transferShapeToBoard = (
@@ -120,8 +143,10 @@ export const boardSlice = createSlice({
         className: tetromino.className,
         preRows: state.rows,
       });
-      if (rows.length) {
-        state.rows = rows;
+
+      const { lines, rows: clearedRows } = clearLine(rows);
+      if (clearedRows.length) {
+        state.rows = clearedRows;
       } else {
         state.rows = buildBoard({
           row,
@@ -133,6 +158,10 @@ export const boardSlice = createSlice({
           preRows: [],
         });
       }
+
+      state.level = Math.floor(state.lines / 10);
+      state.lines += lines;
+      state.points += lines * 100;
     },
   },
 });

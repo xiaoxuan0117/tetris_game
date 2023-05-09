@@ -3,7 +3,12 @@ import * as React from "react";
 import { useAppSelector } from "../../../hooks";
 import { RootState } from "../../../store";
 import { useAppDispatch } from "../../../hooks";
-import { rotate, movePosition, quickDown } from "../../../model/player";
+import {
+  rotate,
+  movePosition,
+  quickDown,
+  setDropTime,
+} from "../../../model/player";
 
 import leftArrowIcon from "../../../images/icon/left-arrow.svg";
 import downArrowIcon from "../../../images/icon/down-arrow.svg";
@@ -35,7 +40,7 @@ const movements: {
 
 export default function GameController(props: IGameControllerProps) {
   const {
-    board: { rows },
+    board: { rows, level },
     player: { dropTime },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
@@ -54,6 +59,11 @@ export default function GameController(props: IGameControllerProps) {
 
     return;
   };
+
+  React.useEffect(() => {
+    console.log("levelllll", 1000 - level * 100);
+    dispatch(setDropTime(1000 - level * 100));
+  }, [dispatch, level]);
 
   React.useEffect(() => {
     const interval = setInterval(() => {

@@ -247,6 +247,9 @@ export const playerSlice = createSlice({
       state.position = { y: y + movementY - 1, x: x };
       state.collided = true;
     },
+    setDropTime: (state, action: PayloadAction<number>) => {
+      state.dropTime = Math.max(action.payload, 200);
+    },
   },
 });
 
@@ -257,6 +260,7 @@ export const {
   rotate,
   movePosition,
   quickDown,
+  setDropTime,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
