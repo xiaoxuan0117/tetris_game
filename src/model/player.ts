@@ -94,7 +94,7 @@ const randomTetromino = (): Tetromino => {
   return tetrominos[key];
 };
 
-const isWithinBoard = (
+export const isWithinBoard = (
   shape: number[][],
   position: { y: number; x: number },
   rows: Cell[][]
@@ -111,7 +111,7 @@ const isWithinBoard = (
   return true;
 };
 
-const isCollided = (
+export const isCollided = (
   shape: number[][],
   position: { y: number; x: number },
   rows: Cell[][]
@@ -132,6 +132,18 @@ const isCollided = (
   return false;
 };
 
+export const movedPosition = (
+  prePosition: { y: number; x: number },
+  movement: { y: number; x: number }
+) => {
+  const { y: preY, x: preX } = prePosition;
+  const { y, x } = movement;
+  const newPositionX = preX + x;
+  const newPositionY = preY + y;
+
+  return { x: newPositionX, y: newPositionY };
+};
+
 export const playerSlice = createSlice({
   name: "Player",
   initialState,
@@ -147,8 +159,13 @@ export const playerSlice = createSlice({
     setNewTetromino: (state) => {
       let newTetrominos = [...state.tetrominoes];
       newTetrominos.unshift(randomTetromino());
-      state.tetromino = newTetrominos.pop() as Tetromino;
+      const firstTetromino = newTetrominos.pop() as Tetromino;
+      state.tetromino = firstTetromino as Tetromino;
       state.tetrominoes = newTetrominos;
+      state.position = { y: 0, x: 4 };
+    },
+    resetCollided: (state) => {
+      state.collided = false;
     },
     rotate: (state, action: PayloadAction<{ rows: Cell[][] }>) => {
       const { shape: currentShape } = state.tetromino;
@@ -169,17 +186,64 @@ export const playerSlice = createSlice({
         state.tetromino.shape = rotatedTetrominoShape;
       }
     },
-    left: (state, action: PayloadAction<{ rows: Cell[][] }>) => {
-      console.log("left");
-    },
-    down: (state, action: PayloadAction<{ rows: Cell[][] }>) => {
-      console.log("down");
+    movePosition: (
+      state,
+      action: PayloadAction<{
+        rows: Cell[][];
+        movement: { y: number; x: number };
+      }>
+    ) => {
+      const { rows, movement } = action.payload;
+
+      const { x, y } = movedPosition(state.position, movement);
+
+      const isWithinBoardResult = isWithinBoard(
+        state.tetromino.shape,
+        { y, x },
+        rows
+      );
+      const isCollidedResult = isCollided(
+        state.tetromino.shape,
+        { y, x },
+        rows
+      );
+
+      const isCollideToBottom = !isWithinBoard(
+        state.tetromino.shape,
+        { y: y + 1, x: state.position.x },
+        rows
+      );
+
+      console.log("collide?", isCollideToBottom);
+
+      if (isWithinBoardResult && !isCollidedResult) {
+        state.position = { y, x };
+      }
+
+      if (isCollidedResult || isCollideToBottom) {
+        state.collided = true;
+      }
     },
     quickDown: (state, action: PayloadAction<{ rows: Cell[][] }>) => {
-      console.log("quickDown");
-    },
-    right: (state, action: PayloadAction<{ rows: Cell[][] }>) => {
-      console.log("right");
+      const { rows } = action.payload;
+      const {
+        position: { y, x },
+        tetromino,
+      } = state;
+      const maxMovementY = rows.length - y;
+      let movementY = 0;
+      // 先找到 position, 轉換 position 和 collision
+      for (movementY; movementY < maxMovementY; movementY++) {
+        if (
+          !isWithinBoard(tetromino.shape, { y: y + movementY, x: x }, rows) ||
+          isCollided(tetromino.shape, { y: y + movementY, x: x }, rows)
+        ) {
+          break;
+        }
+      }
+
+      state.position = { y: y + movementY - 1, x: x };
+      state.collided = true;
     },
   },
 });
@@ -187,11 +251,10 @@ export const playerSlice = createSlice({
 export const {
   setPlayerTetrominoes,
   setNewTetromino,
+  resetCollided,
   rotate,
-  left,
-  down,
+  movePosition,
   quickDown,
-  right,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

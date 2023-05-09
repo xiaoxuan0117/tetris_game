@@ -4,6 +4,7 @@ import { useAppSelector } from "../../../hooks";
 import { RootState } from "../../../store";
 import { useAppDispatch } from "../../../hooks";
 import { setRows } from "../../../model/board";
+import { setNewTetromino, resetCollided } from "../../../model/player";
 
 import BoardCell from "../../Atoms/BoardCell";
 
@@ -14,7 +15,7 @@ export interface IBoardProps {}
 export default function Board(props: IBoardProps) {
   const {
     board: { rows },
-    player: { position, tetromino },
+    player: { collided, position, tetromino },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
@@ -24,8 +25,12 @@ export default function Board(props: IBoardProps) {
   };
 
   React.useEffect(() => {
-    dispatch(setRows({ row: 20, column: 10, position, tetromino }));
-  }, [dispatch, position, tetromino]);
+    dispatch(setRows({ row: 20, column: 10, collided, position, tetromino }));
+    if (collided) {
+      dispatch(resetCollided());
+      dispatch(setNewTetromino());
+    }
+  }, [dispatch, collided, position, tetromino]);
   return (
     <div className={styles.board} style={boardStyles}>
       {rows.map((row, index) =>

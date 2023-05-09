@@ -3,7 +3,7 @@ import * as React from "react";
 import { useAppSelector } from "../../../hooks";
 import { RootState } from "../../../store";
 import { useAppDispatch } from "../../../hooks";
-import { rotate, left, down, quickDown, right } from "../../../model/player";
+import { rotate, movePosition, quickDown } from "../../../model/player";
 
 import leftArrowIcon from "../../../images/icon/left-arrow.svg";
 import downArrowIcon from "../../../images/icon/down-arrow.svg";
@@ -14,8 +14,6 @@ import rotateIcon from "../../../images/icon/rotate.svg";
 import Button from "../../Atoms/Button";
 
 import styles from "./index.module.css";
-import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { Cell } from "../../../static/cell";
 
 export interface IGameControllerProps {}
 
@@ -27,16 +25,12 @@ const keyCode: { [key: string]: string } = {
   ArrowUp: "rotate",
 };
 
-const actions: {
-  [key: string]: ActionCreatorWithPayload<{
-    rows: Cell[][];
-  }>;
+const movements: {
+  [key: string]: { y: number; x: number };
 } = {
-  left: left,
-  down: down,
-  quickDown: quickDown,
-  right: right,
-  rotate: rotate,
+  left: { y: 0, x: -1 },
+  down: { y: 1, x: 0 },
+  right: { y: 0, x: 1 },
 };
 
 export default function GameController(props: IGameControllerProps) {
@@ -46,21 +40,32 @@ export default function GameController(props: IGameControllerProps) {
   const dispatch = useAppDispatch();
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (
-      ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp", "Space"].indexOf(
-        e.code
-      ) === -1
-    )
-      return;
-    dispatch(actions[keyCode[e.code]]({ rows }));
+    if (["ArrowLeft", "ArrowDown", "ArrowRight"].indexOf(e.code) !== -1) {
+      dispatch(
+        movePosition({ rows: rows, movement: movements[keyCode[e.code]] })
+      );
+    } else if (e.code === "Space") {
+      dispatch(quickDown({ rows }));
+      // quikDownEvent();
+    } else if (e.code === "ArrowUp") {
+      dispatch(rotate({ rows }));
+    }
+
+    return;
   };
+
+  React.useEffect(() => {});
+
+  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {};
   return (
     <>
       <div className={styles.gameController}>
         <Button
           className={styles.button}
           onClick={() => {
-            dispatch(left({ rows }));
+            dispatch(
+              movePosition({ rows, movement: movements[keyCode["ArrowLeft"]] })
+            );
           }}
         >
           <img src={leftArrowIcon} alt="left-arrow" />
@@ -68,7 +73,9 @@ export default function GameController(props: IGameControllerProps) {
         <Button
           className={styles.button}
           onClick={() => {
-            dispatch(down({ rows }));
+            dispatch(
+              movePosition({ rows, movement: movements[keyCode["ArrowDown"]] })
+            );
           }}
         >
           <img src={downArrowIcon} alt="down-arrow" />
@@ -92,7 +99,9 @@ export default function GameController(props: IGameControllerProps) {
         <Button
           className={styles.button}
           onClick={() => {
-            dispatch(right({ rows }));
+            dispatch(
+              movePosition({ rows, movement: movements[keyCode["ArrowRight"]] })
+            );
           }}
         >
           <img src={rightArrowIcon} alt="right-arrow" />
@@ -102,7 +111,7 @@ export default function GameController(props: IGameControllerProps) {
         className={styles.input}
         autoFocus
         onKeyDown={onKeyDown}
-        onKeyUp={() => {}}
+        onKeyUp={onKeyUp}
       ></input>
     </>
   );
