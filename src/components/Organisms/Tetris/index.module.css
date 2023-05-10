@@ -1,3 +1,7 @@
+.game {
+  padding: 20px 0;
+}
+
 .gameContent {
   display: flex;
   flex-direction: row;

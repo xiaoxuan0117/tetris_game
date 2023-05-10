@@ -20,7 +20,7 @@ export default function Tetris(props: ITetrisProps) {
     dispatch(setPlayerTetrominoes(4));
   }, [dispatch]);
   return (
-    <div>
+    <div className={styles.game}>
       <ScoreBoard />
       <div className={styles.gameContent}>
         <Board />
