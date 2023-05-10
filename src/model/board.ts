@@ -12,6 +12,7 @@ export interface BoardState {
   level: number;
   lines: number;
   points: number;
+  isGameOver: boolean;
 }
 
 const initialState: BoardState = {
@@ -23,6 +24,7 @@ const initialState: BoardState = {
   level: 0,
   lines: 0,
   points: 0,
+  isGameOver: true,
 };
 
 export const buildBoard = ({
@@ -131,6 +133,25 @@ const transferShapeToBoard = (
   return board;
 };
 
+const storeScore = (score: number) => {
+  console.log("once");
+  let scores = localStorage.getItem("scores");
+  if (scores) {
+    const currentScores = scores ? JSON.parse(scores) : null;
+    const insertIndex = currentScores?.findIndex((s: number) => s < score);
+
+    if (insertIndex === -1) {
+      currentScores.push(score);
+    } else {
+      currentScores.splice(insertIndex, 0, score);
+    }
+
+    localStorage.setItem("scores", JSON.stringify(currentScores.slice(0, 5)));
+  } else {
+    localStorage.setItem("scores", JSON.stringify([score]));
+  }
+};
+
 export const boardSlice = createSlice({
   name: "Board",
   initialState,
@@ -176,15 +197,23 @@ export const boardSlice = createSlice({
           className: tetromino.className,
           preRows: [],
         });
+        storeScore(state.points);
+        state.isGameOver = true;
+        state.level = 0;
+        state.lines = 0;
+        state.points = 0;
       }
 
       state.level = Math.floor(state.lines / 10);
       state.lines += lines;
       state.points += lines * 100;
     },
+    setIsGameOver: (state, action: PayloadAction<boolean>) => {
+      state.isGameOver = action.payload;
+    },
   },
 });
 
-export const { setRows } = boardSlice.actions;
+export const { setRows, setIsGameOver } = boardSlice.actions;
 
 export default boardSlice.reducer;
