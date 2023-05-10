@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { defaultCell, Cell } from "../static/cell";
-import { Tetromino } from "./player";
+import { quickDownPosition, Tetromino } from "./player";
 
 export interface BoardState {
   size: {
@@ -33,6 +33,7 @@ export const buildBoard = ({
   shape,
   className = "",
   preRows,
+  ghost,
 }: {
   row: number;
   column: number;
@@ -41,6 +42,7 @@ export const buildBoard = ({
   shape?: number[][];
   className?: string;
   preRows?: Cell[][];
+  ghost?: boolean;
 }) => {
   let buildRows: (typeof defaultCell)[][] = [];
   if (preRows?.length) {
@@ -54,6 +56,23 @@ export const buildBoard = ({
   }
 
   if (shape) {
+    if (ghost) {
+      const ghostPositionY = quickDownPosition(
+        position.y,
+        position.x,
+        buildRows,
+        shape
+      );
+
+      buildRows = transferShapeToBoard(
+        buildRows,
+        false,
+        { y: position.y + ghostPositionY - 1, x: position.x },
+        shape,
+        "ghost"
+      );
+    }
+
     buildRows = transferShapeToBoard(
       buildRows,
       collided,
@@ -62,7 +81,6 @@ export const buildBoard = ({
       className
     );
   }
-
   return buildRows;
 };
 
@@ -142,6 +160,7 @@ export const boardSlice = createSlice({
         shape: tetromino.shape,
         className: tetromino.className,
         preRows: state.rows,
+        ghost: true,
       });
 
       const { lines, rows: clearedRows } = clearLine(rows);

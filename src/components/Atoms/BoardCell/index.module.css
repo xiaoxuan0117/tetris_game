@@ -31,3 +31,7 @@
 .tetromino__z {
   background-color: var(--red);
 }
+
+.ghost {
+  background-color: var(--light-grey);
+}

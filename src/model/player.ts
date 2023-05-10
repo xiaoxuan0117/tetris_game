@@ -146,6 +146,26 @@ export const movedPosition = (
   return { x: newPositionX, y: newPositionY };
 };
 
+export const quickDownPosition = (
+  y: number,
+  x: number,
+  rows: Cell[][],
+  shape: number[][]
+) => {
+  const maxMovementY = rows.length - y;
+  let movementY = 0;
+  for (movementY; movementY < maxMovementY; movementY++) {
+    if (
+      !isWithinBoard(shape, { y: y + movementY, x: x }, rows) ||
+      isCollided(shape, { y: y + movementY, x: x }, rows)
+    ) {
+      break;
+    }
+  }
+
+  return movementY;
+};
+
 export const playerSlice = createSlice({
   name: "Player",
   initialState,
@@ -232,17 +252,7 @@ export const playerSlice = createSlice({
         position: { y, x },
         tetromino,
       } = state;
-      const maxMovementY = rows.length - y;
-      let movementY = 0;
-      // 先找到 position, 轉換 position 和 collision
-      for (movementY; movementY < maxMovementY; movementY++) {
-        if (
-          !isWithinBoard(tetromino.shape, { y: y + movementY, x: x }, rows) ||
-          isCollided(tetromino.shape, { y: y + movementY, x: x }, rows)
-        ) {
-          break;
-        }
-      }
+      const movementY = quickDownPosition(y, x, rows, tetromino.shape);
 
       state.position = { y: y + movementY - 1, x: x };
       state.collided = true;
