@@ -52,7 +52,6 @@ export default function GameController(props: IGameControllerProps) {
       );
     } else if (e.code === "Space") {
       dispatch(quickDown({ rows }));
-      // quikDownEvent();
     } else if (e.code === "ArrowUp") {
       dispatch(rotate({ rows }));
     }
@@ -88,20 +87,20 @@ export default function GameController(props: IGameControllerProps) {
         <Button
           className={styles.button}
           onClick={() => {
+            dispatch(quickDown({ rows }));
+          }}
+        >
+          <img src={quickDownIcon} alt="quickDown" />
+        </Button>
+        <Button
+          className={styles.button}
+          onClick={() => {
             dispatch(
               movePosition({ rows, movement: movements[keyCode["ArrowDown"]] })
             );
           }}
         >
           <img src={downArrowIcon} alt="down-arrow" />
-        </Button>
-        <Button
-          className={styles.button}
-          onClick={() => {
-            dispatch(quickDown({ rows }));
-          }}
-        >
-          <img src={quickDownIcon} alt="quickDown" />
         </Button>
         <Button
           className={styles.button}
