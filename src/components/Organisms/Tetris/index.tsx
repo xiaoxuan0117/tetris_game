@@ -15,7 +15,6 @@ export interface ITetrisProps {}
 export default function Tetris(props: ITetrisProps) {
   const dispatch = useAppDispatch();
   React.useEffect(() => {
-    console.log("render tetris");
     dispatch(setPlayerTetrominoes(4));
   }, [dispatch]);
   return (

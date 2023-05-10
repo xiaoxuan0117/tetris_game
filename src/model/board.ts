@@ -134,7 +134,6 @@ const transferShapeToBoard = (
 };
 
 const storeScore = (score: number) => {
-  console.log("once");
   let scores = localStorage.getItem("scores");
   if (scores) {
     const currentScores = scores ? JSON.parse(scores) : null;

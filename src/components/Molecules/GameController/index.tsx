@@ -61,7 +61,6 @@ export default function GameController(props: IGameControllerProps) {
   };
 
   React.useEffect(() => {
-    console.log("levelllll", 1000 - level * 100);
     dispatch(setDropTime(1000 - level * 100));
   }, [dispatch, level]);
 
