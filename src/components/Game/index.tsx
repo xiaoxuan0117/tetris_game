@@ -13,6 +13,8 @@ export default function Game() {
     (state: RootState) => state.board.isGameOver
   );
   return (
-    <div className={styles.game}>{isGameOver ? <Landing /> : <Tetris />}</div>
+    <div id="game" className={styles.game}>
+      {isGameOver ? <Landing /> : <Tetris />}
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import classnames from "classnames";
 
-import { buildBoard } from "../../../model/board";
+import { buildPreviewRows } from "../../../model/board";
 
 import BoardCell from "../BoardCell";
 
@@ -20,10 +20,9 @@ export default function Preview(props: IPreviewProps) {
 
   return (
     <div className={styles.preview} style={boardStyles}>
-      {buildBoard({
+      {buildPreviewRows({
         row: 4,
         column: 4,
-        collided: false,
         position: { y: 0, x: 0 },
         shape: props.shape,
         className: props.className,

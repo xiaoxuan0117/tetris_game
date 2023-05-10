@@ -7,6 +7,7 @@ export interface IButtonProps {
   children: React.ReactNode;
   className?: string;
   onClick: () => void;
+  autofocus?: boolean;
 }
 
 export default function Button(props: IButtonProps) {
@@ -17,6 +18,7 @@ export default function Button(props: IButtonProps) {
       onClick={() => {
         props.onClick();
       }}
+      autoFocus={props.autofocus}
     >
       {props.children}
     </button>

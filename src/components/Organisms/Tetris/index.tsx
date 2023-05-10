@@ -2,7 +2,9 @@ import * as React from "react";
 
 import { useAppDispatch } from "../../../hooks";
 import { setPlayerTetrominoes } from "../../../model/player";
+import { setIsPaused } from "../../../model/board";
 
+import Button from "../../Atoms/Button";
 import Board from "../../Molecules/Board";
 import ScoreBoard from "../../Molecules/ScoreBoard";
 import Previews from "../../Molecules/Previews";
@@ -22,7 +24,19 @@ export default function Tetris(props: ITetrisProps) {
       <ScoreBoard />
       <div className={styles.gameContent}>
         <Board />
-        <Previews previews={[1, 2, 3]} />
+        <div className={styles.right}>
+          <Previews previews={[1, 2, 3]} />
+          <div className={styles.controller}>
+            <Button
+              className={styles.pause}
+              onClick={() => {
+                dispatch(setIsPaused(true));
+              }}
+            >
+              Pause (P)
+            </Button>
+          </div>
+        </div>
       </div>
       <GameController />
     </div>

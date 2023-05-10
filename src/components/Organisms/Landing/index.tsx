@@ -23,6 +23,7 @@ export default function Landing(props: ILandingProps) {
     <div className={styles.landing}>
       <h1>Tetris</h1>
       <Button
+        autofocus
         onClick={() => {
           dispatch(setIsGameOver(false));
         }}

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createPortal } from "react-dom";
 
 import { useAppSelector } from "../../../hooks";
 import { RootState } from "../../../store";
@@ -8,7 +9,10 @@ import {
   movePosition,
   quickDown,
   setDropTime,
+  setNewTetromino,
 } from "../../../model/player";
+
+import { setIsPaused, newGame, setIsGameOver } from "../../../model/board";
 
 import leftArrowIcon from "../../../images/icon/left-arrow.svg";
 import downArrowIcon from "../../../images/icon/down-arrow.svg";
@@ -25,9 +29,7 @@ export interface IGameControllerProps {}
 const keyCode: { [key: string]: string } = {
   ArrowLeft: "left",
   ArrowDown: "down",
-  Space: "quickDown",
   ArrowRight: "right",
-  ArrowUp: "rotate",
 };
 
 const movements: {
@@ -40,20 +42,40 @@ const movements: {
 
 export default function GameController(props: IGameControllerProps) {
   const {
-    board: { rows, level },
-    player: { dropTime },
+    board: { rows, level, isPaused, failed },
+    player: { position, tetromino, dropTime },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (["ArrowLeft", "ArrowDown", "ArrowRight"].indexOf(e.code) !== -1) {
+    if (!isPaused) {
+      if (["ArrowLeft", "ArrowDown", "ArrowRight"].indexOf(e.code) !== -1) {
+        dispatch(
+          movePosition({ rows: rows, movement: movements[keyCode[e.code]] })
+        );
+      } else if (e.code === "Space") {
+        dispatch(quickDown({ rows }));
+      } else if (e.code === "ArrowUp") {
+        dispatch(rotate({ rows }));
+      }
+    }
+    if (e.code === "KeyQ") {
+      dispatch(setNewTetromino());
+      dispatch(setIsGameOver(true));
+    } else if (e.code === "KeyP") {
+      dispatch(setIsPaused(true));
+    } else if (e.code === "KeyC") {
+      dispatch(setIsPaused(false));
+    } else if (e.code === "KeyS") {
+      dispatch(setNewTetromino());
       dispatch(
-        movePosition({ rows: rows, movement: movements[keyCode[e.code]] })
+        newGame({
+          row: 20,
+          column: 10,
+          position,
+          tetromino,
+        })
       );
-    } else if (e.code === "Space") {
-      dispatch(quickDown({ rows }));
-    } else if (e.code === "ArrowUp") {
-      dispatch(rotate({ rows }));
     }
 
     return;
@@ -64,15 +86,25 @@ export default function GameController(props: IGameControllerProps) {
   }, [dispatch, level]);
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      dispatch(movePosition({ rows, movement: movements["down"] }));
-    }, dropTime);
+    let interval: NodeJS.Timer;
+    if (!isPaused) {
+      interval = setInterval(() => {
+        dispatch(movePosition({ rows, movement: movements["down"] }));
+      }, dropTime);
+    }
     return () => clearInterval(interval);
-  }, [dispatch, rows, dropTime]);
+  }, [dispatch, rows, dropTime, isPaused]);
+
+  React.useEffect(() => {
+    const input = document.getElementById("gameController");
+    document.addEventListener("click", () => {
+      input?.focus();
+    });
+  });
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {};
   return (
-    <>
+    <div>
       <div className={styles.gameController}>
         <Button
           className={styles.button}
@@ -122,11 +154,57 @@ export default function GameController(props: IGameControllerProps) {
         </Button>
       </div>
       <input
+        id="gameController"
         className={styles.input}
         autoFocus
+        autoComplete="false"
+        type="button"
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
       ></input>
-    </>
+      {isPaused &&
+        createPortal(
+          <div className={styles.modal}>
+            <div className={styles.container}>
+              {!failed && (
+                <Button
+                  className={styles.pause}
+                  onClick={() => {
+                    dispatch(setIsPaused(false));
+                  }}
+                >
+                  Continue (C)
+                </Button>
+              )}
+              <Button
+                className={styles.pause}
+                onClick={() => {
+                  dispatch(setNewTetromino());
+                  dispatch(
+                    newGame({
+                      row: 20,
+                      column: 10,
+                      position,
+                      tetromino,
+                    })
+                  );
+                }}
+              >
+                Start New Game (S)
+              </Button>
+              <Button
+                className={styles.pause}
+                onClick={() => {
+                  dispatch(setNewTetromino());
+                  dispatch(setIsGameOver(true));
+                }}
+              >
+                Quit (Q)
+              </Button>
+            </div>
+          </div>,
+          document.getElementById("game") as HTMLElement
+        )}
+    </div>
   );
 }

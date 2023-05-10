@@ -13,6 +13,8 @@ export interface BoardState {
   lines: number;
   points: number;
   isGameOver: boolean;
+  isPaused: boolean;
+  failed: boolean;
 }
 
 const initialState: BoardState = {
@@ -25,6 +27,8 @@ const initialState: BoardState = {
   lines: 0,
   points: 0,
   isGameOver: true,
+  isPaused: false,
+  failed: false,
 };
 
 export const buildBoard = ({
@@ -41,12 +45,14 @@ export const buildBoard = ({
   column: number;
   collided: boolean;
   position: { y: number; x: number };
-  shape?: number[][];
-  className?: string;
+  shape: number[][];
+  className: string;
   preRows?: Cell[][];
   ghost?: boolean;
 }) => {
   let buildRows: (typeof defaultCell)[][] = [];
+  let buildRowseWithGhost: (typeof defaultCell)[][] = [];
+  let buildRowseWithCurrentShape: (typeof defaultCell)[][] = [];
   if (preRows?.length) {
     buildRows = preRows.map((row) =>
       row.map((cell) => (cell.occupied ? { ...cell } : { ...defaultCell }))
@@ -66,7 +72,7 @@ export const buildBoard = ({
         shape
       );
 
-      buildRows = transferShapeToBoard(
+      buildRowseWithGhost = transferShapeToBoard(
         buildRows,
         false,
         { y: position.y + ghostPositionY - 1, x: position.x },
@@ -75,14 +81,52 @@ export const buildBoard = ({
       );
     }
 
-    buildRows = transferShapeToBoard(
-      buildRows,
+    buildRowseWithCurrentShape = transferShapeToBoard(
+      buildRowseWithGhost,
       collided,
       position,
       shape,
       className
     );
   }
+
+  console.log("buildRowseWithCurrentShape", buildRowseWithCurrentShape);
+
+  if (buildRowseWithCurrentShape.length) {
+    return { failed: false, rows: buildRowseWithCurrentShape };
+  } else {
+    return { failed: true, rows: buildRows };
+  }
+};
+
+export const buildPreviewRows = ({
+  row,
+  column,
+  position,
+  shape,
+  className = "",
+}: {
+  row: number;
+  column: number;
+  position: { y: number; x: number };
+  shape: number[][];
+  className: string;
+}) => {
+  let buildRows: (typeof defaultCell)[][] = [];
+  buildRows = Array.from({ length: row }, () =>
+    Array.from({ length: column }, () => ({ ...defaultCell }))
+  );
+
+  if (shape) {
+    buildRows = transferShapeToBoard(
+      buildRows,
+      false,
+      position,
+      shape,
+      className
+    );
+  }
+
   return buildRows;
 };
 
@@ -172,7 +216,7 @@ export const boardSlice = createSlice({
         position: { y, x },
         tetromino,
       } = action.payload;
-      const rows = buildBoard({
+      const { failed, rows } = buildBoard({
         row,
         column,
         collided: collided || false,
@@ -184,35 +228,67 @@ export const boardSlice = createSlice({
       });
 
       const { lines, rows: clearedRows } = clearLine(rows);
-      if (clearedRows.length) {
-        state.rows = clearedRows;
+      state.rows = clearedRows;
+
+      if (!failed) {
+        state.level = Math.floor(state.lines / 10);
+        state.lines += lines;
+        state.points += lines * 100;
       } else {
-        state.rows = buildBoard({
-          row,
-          column,
-          collided: false,
-          position: { y, x },
-          shape: tetromino.shape,
-          className: tetromino.className,
-          preRows: [],
-        });
         storeScore(state.points);
-        state.isGameOver = true;
+        state.isPaused = true;
+        state.failed = true;
         state.level = 0;
         state.lines = 0;
         state.points = 0;
       }
-
-      state.level = Math.floor(state.lines / 10);
-      state.lines += lines;
-      state.points += lines * 100;
     },
     setIsGameOver: (state, action: PayloadAction<boolean>) => {
+      if (action.payload) {
+        state.isPaused = false;
+        state.failed = false;
+        state.rows = [];
+      }
       state.isGameOver = action.payload;
+    },
+    setIsPaused: (state, action: PayloadAction<boolean>) => {
+      state.isPaused = action.payload;
+    },
+    newGame: (
+      state,
+      action: PayloadAction<{
+        row: number;
+        column: number;
+        position: { y: number; x: number };
+        tetromino: Tetromino;
+      }>
+    ) => {
+      const {
+        row,
+        column,
+        position: { y, x },
+        tetromino,
+      } = action.payload;
+      const { rows } = buildBoard({
+        row,
+        column,
+        collided: false,
+        position: { y, x },
+        shape: tetromino.shape,
+        className: tetromino.className,
+        preRows: [],
+      });
+      state.rows = rows;
+      state.isPaused = false;
+      state.failed = false;
+      state.level = 0;
+      state.lines = 0;
+      state.points = 0;
     },
   },
 });
 
-export const { setRows, setIsGameOver } = boardSlice.actions;
+export const { setRows, setIsGameOver, setIsPaused, newGame } =
+  boardSlice.actions;
 
 export default boardSlice.reducer;
