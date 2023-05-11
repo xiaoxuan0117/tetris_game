@@ -271,6 +271,9 @@ export const playerSlice = createSlice({
         state.holdedTetromino = state.tetromino;
       }
     },
+    resetPlayer: (state) => {
+      return initialState;
+    },
   },
 });
 
@@ -283,6 +286,7 @@ export const {
   quickDown,
   setDropTime,
   holdTetromino,
+  resetPlayer,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;

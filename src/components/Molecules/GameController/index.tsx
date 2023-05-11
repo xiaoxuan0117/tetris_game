@@ -11,6 +11,7 @@ import {
   setDropTime,
   setNewTetromino,
   holdTetromino,
+  resetPlayer,
 } from "../../../model/player";
 
 import { setIsPaused, newGame, setIsGameOver } from "../../../model/board";
@@ -61,7 +62,7 @@ export default function GameController(props: IGameControllerProps) {
       }
     }
     if (e.code === "KeyQ") {
-      dispatch(setNewTetromino());
+      dispatch(resetPlayer());
       dispatch(setIsGameOver(true));
     } else if (e.code === "KeyP") {
       dispatch(setIsPaused(true));
