@@ -70,7 +70,7 @@ export default function Tetris(props: ITetrisProps) {
               }
             }}
           >
-            Hold (H)
+            Change (C)
           </Button>
         </div>
       </div>

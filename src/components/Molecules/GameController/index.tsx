@@ -122,7 +122,7 @@ export default function GameController(props: IGameControllerProps) {
         quickDrop();
       } else if (e.code === "ArrowUp") {
         rotateShape();
-      } else if (e.code === "KeyH") {
+      } else if (e.code === "KeyC") {
         holdTheTetromino();
       }
     }
@@ -130,7 +130,7 @@ export default function GameController(props: IGameControllerProps) {
       quitGame();
     } else if (e.code === "KeyP") {
       pauseGame();
-    } else if (e.code === "KeyC") {
+    } else if (e.code === "KeyO") {
       continueGame();
     } else if (e.code === "KeyS") {
       startNewGame();
@@ -231,7 +231,7 @@ export default function GameController(props: IGameControllerProps) {
                     continueGame();
                   }}
                 >
-                  Continue (C)
+                  Continue (O)
                 </Button>
               )}
               <Button
