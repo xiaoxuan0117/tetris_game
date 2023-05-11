@@ -1,5 +1,6 @@
 # Tetris Game
-This is a tetris game made by CRA.
+This is a tetris game made by create-react-app.
+play the game: https://xiaoxuan0117.github.io/tetris_game
 
 # Usage
 
