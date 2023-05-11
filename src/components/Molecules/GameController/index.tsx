@@ -12,6 +12,7 @@ import {
   setNewTetromino,
   holdTetromino,
   resetPlayer,
+  setPlayerTetrominoes,
 } from "../../../model/player";
 
 import { setIsPaused, newGame, setIsGameOver } from "../../../model/board";
@@ -49,6 +50,38 @@ export default function GameController(props: IGameControllerProps) {
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
+  const quitGame = () => {
+    dispatch(resetPlayer());
+    dispatch(setIsGameOver(true));
+  };
+
+  const pauseGame = () => {
+    dispatch(setIsPaused(true));
+  };
+
+  const continueGame = () => {
+    dispatch(setIsPaused(false));
+  };
+
+  const startNewGame = () => {
+    dispatch(setPlayerTetrominoes(4));
+    dispatch(
+      newGame({
+        row: 20,
+        column: 10,
+        position,
+        tetromino,
+      })
+    );
+  };
+
+  const holdTheTetromino = () => {
+    dispatch(holdTetromino());
+    if (!holdedTetromino.shape.length) {
+      dispatch(setNewTetromino());
+    }
+  };
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isPaused) {
       if (["ArrowLeft", "ArrowDown", "ArrowRight"].indexOf(e.code) !== -1) {
@@ -59,31 +92,18 @@ export default function GameController(props: IGameControllerProps) {
         dispatch(quickDown({ rows }));
       } else if (e.code === "ArrowUp") {
         dispatch(rotate({ rows }));
+      } else if (e.code === "KeyH") {
+        holdTheTetromino();
       }
     }
     if (e.code === "KeyQ") {
-      dispatch(resetPlayer());
-      dispatch(setIsGameOver(true));
+      quitGame();
     } else if (e.code === "KeyP") {
-      dispatch(setIsPaused(true));
+      pauseGame();
     } else if (e.code === "KeyC") {
-      dispatch(setIsPaused(false));
+      continueGame();
     } else if (e.code === "KeyS") {
-      dispatch(setNewTetromino());
-      dispatch(
-        newGame({
-          row: 20,
-          column: 10,
-          position,
-          tetromino,
-        })
-      );
-    } else if (e.code === "KeyH") {
-      console.log("hhh");
-      dispatch(holdTetromino());
-      if (!holdedTetromino.shape.length) {
-        dispatch(setNewTetromino());
-      }
+      startNewGame();
     }
 
     return;
@@ -178,7 +198,7 @@ export default function GameController(props: IGameControllerProps) {
                 <Button
                   className={styles.pause}
                   onClick={() => {
-                    dispatch(setIsPaused(false));
+                    continueGame();
                   }}
                 >
                   Continue (C)
@@ -187,15 +207,7 @@ export default function GameController(props: IGameControllerProps) {
               <Button
                 className={styles.pause}
                 onClick={() => {
-                  dispatch(setNewTetromino());
-                  dispatch(
-                    newGame({
-                      row: 20,
-                      column: 10,
-                      position,
-                      tetromino,
-                    })
-                  );
+                  startNewGame();
                 }}
               >
                 Start New Game (S)
@@ -203,8 +215,7 @@ export default function GameController(props: IGameControllerProps) {
               <Button
                 className={styles.pause}
                 onClick={() => {
-                  dispatch(setNewTetromino());
-                  dispatch(setIsGameOver(true));
+                  quitGame();
                 }}
               >
                 Quit (Q)

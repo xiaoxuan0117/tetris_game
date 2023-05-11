@@ -179,6 +179,7 @@ export const playerSlice = createSlice({
       }
       state.tetromino = tetrominoes.pop() as Tetromino;
       state.tetrominoes = tetrominoes;
+      state.holdedTetromino = { shape: [], className: "" };
     },
     setNewTetromino: (state) => {
       let newTetrominos = [...state.tetrominoes];
@@ -272,7 +273,7 @@ export const playerSlice = createSlice({
       }
     },
     resetPlayer: (state) => {
-      return initialState;
+      return { ...initialState };
     },
   },
 });
