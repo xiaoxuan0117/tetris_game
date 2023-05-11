@@ -7,6 +7,7 @@
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25);
   padding: 4px 20px;
   margin-bottom: 25px;
+  font-size: 25px;
 }
 
 p {
@@ -15,6 +16,5 @@ p {
 }
 
 .title {
-  font-size: 16px;
   color: var(--primary);
 }

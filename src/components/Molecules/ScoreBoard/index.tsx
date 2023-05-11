@@ -18,7 +18,7 @@ export default function ScoreBoard(props: IScoreBoardProps) {
         <p>{level}</p>
       </div>
       <div className={styles.linesToLevel}>
-        <p className={styles.title}>Lines To Level</p>
+        <p className={styles.title}>Lines</p>
         <p>{lines}</p>
       </div>
       <div className={styles.points}>
