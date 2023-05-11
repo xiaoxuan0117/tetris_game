@@ -10,6 +10,7 @@ import {
   quickDown,
   setDropTime,
   setNewTetromino,
+  holdTetromino,
 } from "../../../model/player";
 
 import { setIsPaused, newGame, setIsGameOver } from "../../../model/board";
@@ -43,7 +44,7 @@ const movements: {
 export default function GameController(props: IGameControllerProps) {
   const {
     board: { rows, level, isPaused, failed },
-    player: { position, tetromino, dropTime },
+    player: { position, tetromino, dropTime, holdedTetromino },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
@@ -76,6 +77,12 @@ export default function GameController(props: IGameControllerProps) {
           tetromino,
         })
       );
+    } else if (e.code === "KeyH") {
+      console.log("hhh");
+      dispatch(holdTetromino());
+      if (!holdedTetromino.shape.length) {
+        dispatch(setNewTetromino());
+      }
     }
 
     return;

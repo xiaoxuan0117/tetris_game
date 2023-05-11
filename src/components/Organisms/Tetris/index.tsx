@@ -1,10 +1,17 @@
 import * as React from "react";
 
+import { useAppSelector } from "../../../hooks";
+import { RootState } from "../../../store";
 import { useAppDispatch } from "../../../hooks";
-import { setPlayerTetrominoes } from "../../../model/player";
+import {
+  setPlayerTetrominoes,
+  setNewTetromino,
+  holdTetromino,
+} from "../../../model/player";
 import { setIsPaused } from "../../../model/board";
 
 import Button from "../../Atoms/Button";
+import Preview from "../../Atoms/Preview";
 import Board from "../../Molecules/Board";
 import ScoreBoard from "../../Molecules/ScoreBoard";
 import Previews from "../../Molecules/Previews";
@@ -15,6 +22,9 @@ import styles from "./index.module.css";
 export interface ITetrisProps {}
 
 export default function Tetris(props: ITetrisProps) {
+  const { holdedTetromino } = useAppSelector(
+    (state: RootState) => state.player
+  );
   const dispatch = useAppDispatch();
   React.useEffect(() => {
     dispatch(setPlayerTetrominoes(4));
@@ -26,16 +36,30 @@ export default function Tetris(props: ITetrisProps) {
         <Board />
         <div className={styles.right}>
           <Previews previews={[1, 2, 3]} />
-          <div className={styles.controller}>
-            <Button
-              className={styles.pause}
-              onClick={() => {
-                dispatch(setIsPaused(true));
-              }}
-            >
-              Pause (P)
-            </Button>
-          </div>
+          <Button
+            className={styles.pause}
+            onClick={() => {
+              dispatch(setIsPaused(true));
+            }}
+          >
+            Pause (P)
+          </Button>
+          <Preview
+            shape={holdedTetromino.shape}
+            className={holdedTetromino.className}
+          />
+          <Button
+            className={styles.pause}
+            onClick={() => {
+              dispatch(holdTetromino());
+              console.log("holdedTetromino.shape.", holdedTetromino.shape);
+              if (!holdedTetromino.shape.length) {
+                dispatch(setNewTetromino());
+              }
+            }}
+          >
+            Hold (H)
+          </Button>
         </div>
       </div>
       <GameController />

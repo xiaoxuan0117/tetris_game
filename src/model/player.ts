@@ -7,6 +7,7 @@ export interface PlayerState {
   position: { y: number; x: number };
   tetromino: Tetromino;
   tetrominoes: Tetromino[];
+  holdedTetromino: Tetromino;
   dropTime: number;
 }
 
@@ -16,6 +17,7 @@ const initialState: PlayerState = {
   position: { y: 0, x: 4 },
   tetromino: { shape: [], className: "" },
   tetrominoes: [],
+  holdedTetromino: { shape: [], className: "" },
   dropTime: 1000,
 };
 
@@ -260,6 +262,15 @@ export const playerSlice = createSlice({
     setDropTime: (state, action: PayloadAction<number>) => {
       state.dropTime = Math.max(action.payload, 200);
     },
+    holdTetromino: (state) => {
+      if (state.holdedTetromino) {
+        const temp = state.holdedTetromino;
+        state.holdedTetromino = state.tetromino;
+        state.tetromino = temp;
+      } else {
+        state.holdedTetromino = state.tetromino;
+      }
+    },
   },
 });
 
@@ -271,6 +282,7 @@ export const {
   movePosition,
   quickDown,
   setDropTime,
+  holdTetromino,
 } = playerSlice.actions;
 
 export default playerSlice.reducer;
