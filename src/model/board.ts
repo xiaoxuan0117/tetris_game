@@ -90,8 +90,6 @@ export const buildBoard = ({
     );
   }
 
-  console.log("buildRowseWithCurrentShape", buildRowseWithCurrentShape);
-
   if (buildRowseWithCurrentShape.length) {
     return { failed: false, rows: buildRowseWithCurrentShape };
   } else {
