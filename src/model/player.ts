@@ -9,6 +9,7 @@ export interface PlayerState {
   tetrominoes: Tetromino[];
   holdedTetromino: Tetromino;
   dropTime: number;
+  soundOn: boolean;
 }
 
 const initialState: PlayerState = {
@@ -19,6 +20,7 @@ const initialState: PlayerState = {
   tetrominoes: [],
   holdedTetromino: { shape: [], className: "" },
   dropTime: 1000,
+  soundOn: true,
 };
 
 export interface Tetromino {
@@ -180,6 +182,7 @@ export const playerSlice = createSlice({
       state.tetromino = tetrominoes.pop() as Tetromino;
       state.tetrominoes = tetrominoes;
       state.holdedTetromino = { shape: [], className: "" };
+      state.position = { y: 0, x: 4 };
     },
     setNewTetromino: (state) => {
       let newTetrominos = [...state.tetrominoes];
@@ -272,6 +275,9 @@ export const playerSlice = createSlice({
         state.holdedTetromino = state.tetromino;
       }
     },
+    toggleSound: (state) => {
+      state.soundOn = !state.soundOn;
+    },
     resetPlayer: (state) => {
       return { ...initialState };
     },
@@ -287,6 +293,7 @@ export const {
   quickDown,
   setDropTime,
   holdTetromino,
+  toggleSound,
   resetPlayer,
 } = playerSlice.actions;
 

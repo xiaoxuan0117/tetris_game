@@ -11,6 +11,7 @@ import {
   setDropTime,
   setNewTetromino,
   holdTetromino,
+  toggleSound,
   resetPlayer,
   setPlayerTetrominoes,
 } from "../../../model/player";
@@ -22,6 +23,8 @@ import downArrowIcon from "../../../images/icon/down-arrow.svg";
 import rightArrowIcon from "../../../images/icon/right-arrow.svg";
 import quickDownIcon from "../../../images/icon/quick-down.svg";
 import rotateIcon from "../../../images/icon/rotate.svg";
+import placeSound from "../../../audio/placeSound.mp3";
+import functionSound from "../../../audio/functionSound.mp3";
 
 import Button from "../../Atoms/Button";
 
@@ -44,26 +47,48 @@ const movements: {
 };
 
 export default function GameController(props: IGameControllerProps) {
+  const [sound] = React.useState(new Audio());
   const {
     board: { rows, level, isPaused, failed },
-    player: { position, tetromino, dropTime, holdedTetromino },
+    player: { position, tetromino, dropTime, holdedTetromino, soundOn },
   } = useAppSelector((state: RootState) => state);
   const dispatch = useAppDispatch();
 
+  const playSound = (src: string) => {
+    if (soundOn) {
+      sound.src = src;
+      sound.volume = 0.03;
+      sound.play();
+    }
+  };
+
+  const quickDrop = () => {
+    playSound(placeSound);
+    dispatch(quickDown({ rows }));
+  };
+
+  const rotateShape = () => {
+    dispatch(rotate({ rows }));
+  };
+
   const quitGame = () => {
+    playSound(functionSound);
     dispatch(resetPlayer());
     dispatch(setIsGameOver(true));
   };
 
   const pauseGame = () => {
+    playSound(functionSound);
     dispatch(setIsPaused(true));
   };
 
   const continueGame = () => {
+    playSound(functionSound);
     dispatch(setIsPaused(false));
   };
 
   const startNewGame = () => {
+    playSound(functionSound);
     dispatch(setPlayerTetrominoes(4));
     dispatch(
       newGame({
@@ -76,10 +101,15 @@ export default function GameController(props: IGameControllerProps) {
   };
 
   const holdTheTetromino = () => {
+    playSound(placeSound);
     dispatch(holdTetromino());
     if (!holdedTetromino.shape.length) {
       dispatch(setNewTetromino());
     }
+  };
+
+  const toggleSoundOn = () => {
+    dispatch(toggleSound());
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -89,9 +119,9 @@ export default function GameController(props: IGameControllerProps) {
           movePosition({ rows: rows, movement: movements[keyCode[e.code]] })
         );
       } else if (e.code === "Space") {
-        dispatch(quickDown({ rows }));
+        quickDrop();
       } else if (e.code === "ArrowUp") {
-        dispatch(rotate({ rows }));
+        rotateShape();
       } else if (e.code === "KeyH") {
         holdTheTetromino();
       }
@@ -104,6 +134,8 @@ export default function GameController(props: IGameControllerProps) {
       continueGame();
     } else if (e.code === "KeyS") {
       startNewGame();
+    } else if (e.code === "KeyA") {
+      toggleSoundOn();
     }
 
     return;
@@ -130,7 +162,6 @@ export default function GameController(props: IGameControllerProps) {
     });
   });
 
-  const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {};
   return (
     <div>
       <div className={styles.gameController}>
@@ -147,7 +178,7 @@ export default function GameController(props: IGameControllerProps) {
         <Button
           className={styles.button}
           onClick={() => {
-            dispatch(quickDown({ rows }));
+            quickDrop();
           }}
         >
           <img src={quickDownIcon} alt="quickDown" />
@@ -165,7 +196,7 @@ export default function GameController(props: IGameControllerProps) {
         <Button
           className={styles.button}
           onClick={() => {
-            dispatch(rotate({ rows }));
+            rotateShape();
           }}
         >
           <img src={rotateIcon} alt="rotate" />
@@ -188,7 +219,6 @@ export default function GameController(props: IGameControllerProps) {
         autoComplete="false"
         type="button"
         onKeyDown={onKeyDown}
-        onKeyUp={onKeyUp}
       ></input>
       {isPaused &&
         createPortal(
@@ -219,6 +249,14 @@ export default function GameController(props: IGameControllerProps) {
                 }}
               >
                 Quit (Q)
+              </Button>
+              <Button
+                className={styles.pause}
+                onClick={() => {
+                  dispatch(toggleSound());
+                }}
+              >
+                {`${soundOn ? "Sound Off(A)" : "Sound On(A)"}`}
               </Button>
             </div>
           </div>,
