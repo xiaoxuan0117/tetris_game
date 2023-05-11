@@ -4,6 +4,13 @@
   border: 1.5px solid var(--grid);
 }
 
+@media screen and (max-width: 768px) {
+  .boardCell {
+    border: 0.5px solid var(--grid);
+  }
+
+}
+
 .tetromino__i {
   background-color: var(--light-blue);
 }
