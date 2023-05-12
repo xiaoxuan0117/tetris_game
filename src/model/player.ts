@@ -274,6 +274,7 @@ export const playerSlice = createSlice({
       } else {
         state.holdedTetromino = state.tetromino;
       }
+      state.position = { y: 0, x: 4 };
     },
     toggleSound: (state) => {
       state.soundOn = !state.soundOn;
