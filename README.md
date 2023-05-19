@@ -1,9 +1,10 @@
 # Tetris Game
 This is a tetris game made by create-react-app.
 
-![tetris_gif](/src/images/icon/tetris_game.gif)
 
 play the game: https://xiaoxuan0117.github.io/tetris_game
+
+![tetris_gif](/src/images/icon/tetris_game.gif)
 
 # Usage
 clone the project and run `yarn start`
